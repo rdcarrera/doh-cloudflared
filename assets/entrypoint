@@ -1,0 +1,17 @@
+#!/bin/bash
+  case "$@" in
+  "proxy-dns")
+    ! curl --silent -f https://1.1.1.1 &>/dev/null \
+    && echo "You don't have access to the cloudflared server" \
+    && exit 1
+    /usr/local/bin/cloudflared update
+    /usr/local/bin/cloudflared proxy-dns --port ${DNS_PORT}
+  ;;
+  *)
+    [ ! -f $@ ] || [ ! -x $@ ] \
+    && echo -e "The defined cmd doesn't exist inside the container: $@\t\nContainer valid options: 'proxy-dns'" \
+    && exit 1
+    exec $@
+  ;;
+  esac
+  exit 0
